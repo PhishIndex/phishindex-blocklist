@@ -3,7 +3,7 @@ name: Merge URLs
 on:
   schedule:
     - cron: '0 * * * *' 
-  workflow_dispatch:  # Properly indented
+  workflow_dispatch:
 
 jobs:
   merge_urls:
