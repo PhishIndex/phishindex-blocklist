@@ -1,0 +1,27 @@
+name: Merge URLs
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # Runs every hour
+
+jobs:
+  merge_urls:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        
+      - name: Fetch URLs
+        run: |
+          curl -s https://raw.githubusercontent.com/PhishIndex/phishindex-blocklist/refs/heads/main/Malicious_URLs/external_urls -o external_urls.txt
+          curl -s https://raw.githubusercontent.com/PhishIndex/phishindex-blocklist/refs/heads/main/Malicious_URLs/phishindex_urls -o phishindex_urls.txt
+          cat external_urls.txt phishindex_urls.txt | sort -u > all_urls.txt
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add all_urls.txt
+          git commit -m "Update all URLs" || echo "No changes to commit"
+          git push origin main # Adjust branch name if needed
