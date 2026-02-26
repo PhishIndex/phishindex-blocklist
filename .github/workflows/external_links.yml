@@ -1,4 +1,4 @@
-name: Fetch and Clean Malicious URLs
+name: Fetch Threat Intel Sources
 
 on:
   schedule:
@@ -20,7 +20,7 @@ jobs:
 
       - name: Clean Files
         run: |
-          cat hosts.txt phishing-domains-ACTIVE.txt | grep -vE '^\s*#|^\s*$' > Malicious_URLs/external_urls
+          cat hosts.txt phishing-domains-ACTIVE.txt | grep -vE '^\s*#|^\s*$|redacted' > Malicious_URLs/external_urls
 
       - name: Commit Changes
         run: |
