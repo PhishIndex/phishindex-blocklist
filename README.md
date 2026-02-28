@@ -2,7 +2,7 @@
 This blocklist is primarily used by the PhishIndex browser extension to detect and flag malicious links. We combine data from open source blocklists and our own threat intelligence. Three seperate blocklists exist:
 - All_urls includes both the External URLs, and the PhishIndex URLs.
 - External_urls are collected from the threat intelligence sources as outlined below.
-- PhishIndex_urls are manually discovered and collected by us and do not include links from the threat intelligence sources.   
+- PhishIndex_urls are discovered and collected by us or our automated systems and do not include links from the threat intelligence sources.   
 
 ## Threat Intelligence Sources
 We rely on the amazing work of the cybersecurity community to ensure protection for everyone. Special thanks to them for helping us protect the web.
