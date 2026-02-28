@@ -20,6 +20,7 @@ jobs:
 
       - name: Clean Files
         run: |
+          mkdir -p Malicious_URLs
           cat hosts.txt phishing-domains-ACTIVE.txt | grep -vE '^\s*#|^\s*$|redacted' > Malicious_URLs/external_urls
 
       - name: Commit Changes
@@ -28,4 +29,4 @@ jobs:
           git config --local user.email "actions@github.com"
           git add Malicious_URLs/external_urls
           git commit -m "Update external URLs" || echo "No changes to commit"
-          git push
+          git push --force origin main
