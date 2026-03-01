@@ -1,0 +1,56 @@
+name: Malicious Domain Updater
+
+on:
+  schedule:
+    - cron: '0 */4 * * *'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Ensure Data directories exist
+        run: |
+          mkdir -p "Data/Malicious Domains/txt"
+
+      - name: Fetch remote lists
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/Zaczero/pihole-phishtank/refs/heads/main/hosts.txt -o /tmp/hosts.txt
+          curl -fsSL https://raw.githubusercontent.com/Phishing-Database/Phishing.Database/refs/heads/master/phishing-domains-ACTIVE.txt -o /tmp/phishing-domains-ACTIVE.txt
+
+      - name: Combine and filter lists
+        run: |
+          cat /tmp/hosts.txt /tmp/phishing-domains-ACTIVE.txt \
+            | grep -vE '^\s*#|^\s*$|redacted' \
+            > "Data/Malicious Domains/txt/all_domains.txt"
+
+      - name: Append local phishindex_domains.txt
+        run: |
+          if [ -f "Data/Malicious Domains/txt/phishindex_domains.txt" ]; then
+            cat "Data/Malicious Domains/txt/phishindex_domains.txt" >> "Data/Malicious Domains/txt/all_domains.txt"
+          fi
+
+      - name: Normalize, dedupe and randomize
+        run: |
+          awk '{ gsub(/^[ \t]+|[ \t]+$/, ""); if($0!="") print }' "Data/Malicious Domains/txt/all_domains.txt" \
+            | sort -u \
+            | shuf \
+            > "Data/Malicious Domains/txt/all_domains.txt.tmp"
+          mv "Data/Malicious Domains/txt/all_domains.txt.tmp" "Data/Malicious Domains/txt/all_domains.txt"
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if ! git diff --staged --quiet; then
+            git commit -m "Updated malicious domains"
+            git push
+          else
+            echo "No changes to commit."
+          fi
