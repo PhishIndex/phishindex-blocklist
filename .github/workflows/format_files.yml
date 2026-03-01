@@ -2,7 +2,7 @@ name: Format Files
 
 on:
   schedule:
-    - cron: '0 */5 * * *'
+    - cron: '0 */4 * * *'
   workflow_dispatch: {}
 
 permissions:
@@ -29,24 +29,41 @@ jobs:
             src="$1"
             dst="$2"
             mkdir -p "$(dirname "$dst")"
-            awk 'BEGIN { print "[" }
-                 NF { gsub(/^[ \t]+|[ \t]+$/,""); print "  \"" $0 "\"," }
-                 END { print "]" }' "$src" > "$dst.tmp"
-            mv "$dst.tmp" "$dst"
+            if [ -f "$src" ]; then
+              awk 'BEGIN { print "[" }
+                   NF { gsub(/^[ \t]+|[ \t]+$/,""); print "  \"" $0 "\"," }
+                   END { print "]" }' "$src" > "$dst.tmp"
+              mv "$dst.tmp" "$dst"
+            else
+              printf '[]\n' > "$dst"
+            fi
           }
 
           convert_txt_to_adblock() {
             src="$1"
             dst="$2"
             mkdir -p "$(dirname "$dst")"
-            awk 'NF { gsub(/^[ \t]+|[ \t]+$/,""); print "||" $0 "^" }' "$src" > "$dst.tmp"
-            mv "$dst.tmp" "$dst"
+            if [ -f "$src" ]; then
+              awk 'NF { gsub(/^[ \t]+|[ \t]+$/,""); print "||" $0 "^" }' "$src" > "$dst.tmp"
+              mv "$dst.tmp" "$dst"
+            else
+              printf '' > "$dst"
+            fi
           }
 
           convert_txt_to_json "Data/Malicious Domains/txt/phishindex_domains.txt" "Data/Malicious Domains/json/phishindex_domains.json"
           convert_txt_to_json "Data/Malicious Domains/txt/all_domains.txt" "Data/Malicious Domains/json/all_domains.json"
           convert_txt_to_adblock "Data/Malicious Domains/txt/phishindex_domains.txt" "Data/Malicious Domains/adblock/phishindex_domains.adblock"
           convert_txt_to_adblock "Data/Malicious Domains/txt/all_domains.txt" "Data/Malicious Domains/adblock/all_domains.adblock"
+
+          convert_txt_to_json "Data/IP Logger Domains/ip_logger_domains.txt" "Data/IP Logger Domains/ip_logger_domains.json"
+          convert_txt_to_adblock "Data/IP Logger Domains/ip_logger_domains.txt" "Data/IP Logger Domains/ip_logger_domains.adblock"
+
+          convert_txt_to_json "Data/URL Shorteners/url_shorteners.txt" "Data/URL Shorteners/url_shorteners.json"
+          convert_txt_to_adblock "Data/URL Shorteners/url_shorteners.txt" "Data/URL Shorteners/url_shorteners.adblock"
+
+          convert_txt_to_json "Data/Domain Hosting Providers/domain_hosting_providers.txt" "Data/Domain Hosting Providers/domain_hosting_providers.json"
+          convert_txt_to_adblock "Data/Domain Hosting Providers/domain_hosting_providers.txt" "Data/Domain Hosting Providers/domain_hosting_providers.adblock"
 
       - name: Commit and push changes
         run: |
@@ -56,5 +73,5 @@ jobs:
           if git diff --staged --quiet; then
             exit 0
           fi
-          git commit -m "Formatted files"
+          git commit -m "Formatted files [AUTOMATIC]"
           git push
