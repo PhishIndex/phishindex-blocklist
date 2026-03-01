@@ -56,5 +56,5 @@ jobs:
           if git diff --staged --quiet; then
             exit 0
           fi
-          git commit -m "Build: update domain JSON and adblock outputs"
+          git commit -m "Formatted files"
           git push
