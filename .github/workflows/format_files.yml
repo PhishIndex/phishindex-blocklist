@@ -65,6 +65,8 @@ jobs:
           convert_txt_to_json "Data/Domain Hosting Providers/domain_hosting_providers.txt" "Data/Domain Hosting Providers/domain_hosting_providers.json"
           convert_txt_to_adblock "Data/Domain Hosting Providers/domain_hosting_providers.txt" "Data/Domain Hosting Providers/domain_hosting_providers.adblock"
 
+          convert_txt_to_json "Data/URL Tracking Parameters/url_tracking_parameters.txt" "Data/URL Tracking Parameters/url_tracking_parameters.json"
+
       - name: Commit and push changes
         run: |
           git config user.name "github-actions[bot]"
