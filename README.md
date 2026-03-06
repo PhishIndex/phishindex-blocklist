@@ -9,6 +9,7 @@ This regularly updated blocklist contains several types of data, primarily relat
 | IP Logger Domains    | Manually updated list containing domains used by certain IP logging service providers to track user IP addresses, which might potentially lead to doxxing. These type of services are often used by online communities to coordinate harassment.  | JSON, TXT, ADBLOCK |  Manual (every 3 months) |
 | Domain Hosting Providers  | Manually updated list containing services which allow users to host a website free of charge on their domain like randomwebsite.weebly.com. These are heavily favored by threat actors to conduct phishing campaings as they are easy to create. | JSON, TXT, ADBLOCK |Manual (every 3 months) |
 | URL Shorteners | Manually updated list containing domains used by URL Shortening services. These types of services can and often are used by attackers to evade detections from security providers. | JSON, TXT, ADBLOCK |Manual (every 3 months) |
+| URL Tracking Parameters | Manually updated list containing URL parameters which are often used for tracking, like UTM, etc. | JSON, TXT | Manual (every 3 months)
 
 #
 **Data accuracy:**
