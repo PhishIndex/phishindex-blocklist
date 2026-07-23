@@ -1,0 +1,71 @@
+name: Malicious Domain Updater
+
+on:
+  schedule:
+    - cron: '0 */2 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Ensure Data directories exist
+        run: |
+          mkdir -p "Data/Malicious Domains/txt"
+
+      - name: Fetch remote lists
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/Zaczero/pihole-phishtank/refs/heads/main/hosts.txt -o /tmp/hosts.txt
+          curl -fsSL https://raw.githubusercontent.com/phishdestroy/destroylist/main/list.txt -o /tmp/destroylist.txt
+
+      - name: Fetch URLAbuse records
+        env:
+          URLABUSE_EMAIL: ${{ secrets.URLABUSE_EMAIL }}
+          URLABUSE_TOKEN: ${{ secrets.URLABUSE_TOKEN }}
+        run: |
+          curl -s "https://urlabuse.com/get_record_by_rowid?email=${URLABUSE_EMAIL}&token=${URLABUSE_TOKEN}" \
+            | jq -r '.attr[] | .url' \
+            > /tmp/urlabuse_domains.txt
+
+      - name: Combine and filter lists
+        run: |
+          cat /tmp/hosts.txt /tmp/urlabuse_domains.txt /tmp/destroylist.txt \
+            | grep -vE '^\s*#|^\s*$|redacted' \
+            > "Data/Malicious Domains/txt/all_domains.txt"
+
+      - name: Append local phishindex_domains.txt
+        run: |
+          if [ -f "Data/Malicious Domains/txt/phishindex_domains.txt" ]; then
+            cat "Data/Malicious Domains/txt/phishindex_domains.txt" >> "Data/Malicious Domains/txt/all_domains.txt"
+          fi
+
+      - name: Normalize, dedupe and randomize
+        run: |
+          awk '{ gsub(/^[ \t]+|[ \t]+$/, ""); if($0!="") print }' "Data/Malicious Domains/txt/all_domains.txt" \
+            | sed -E 's|^https?://||; s|^www\.||' \
+            | sort -u \
+            | shuf \
+            > "Data/Malicious Domains/txt/all_domains.txt.tmp"
+          mv "Data/Malicious Domains/txt/all_domains.txt.tmp" "Data/Malicious Domains/txt/all_domains.txt"
+
+      - name: Commit and push changes
+        env:
+          GIT_TERMINAL_PROMPT: "0"
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if ! git diff --staged --quiet; then
+            git commit -m "Updated malicious domains [AUTOMATIC]"
+            git push
+          else
+            echo "No changes to commit."
+          fi
