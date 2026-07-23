@@ -32,14 +32,19 @@ The PhishIndex URL blocklist is released under the **MIT License**, allowing use
 
 ## Data Sources
 
-Our malicious domain data comes from:
-- Our own threat intelligence tools
+Malicious domain data:
+- PhishIndex Threat Intelligence
 - Destroylist - https://github.com/phishdestroy/destroylist
 - PhishTank - https://phishtank.com (via https://github.com/Zaczero/pihole-phishtank)
 - URLAbuse - https://urlabuse.com (CC BY 4.0)
 
+Tracking parameter data:
+- PhishIndex Threat Intelligence
+- Privacy Tests (https://privacytests.org)
 
-We automatically process and refine this data to remove false positives and ensure proper formatting so we cannot always be fully sure if any modifications were made. Specifically regarding the URLabuse source, we automatically extract the URLs from the JSON formatting, remove the protocols (https://, http://, www.) and no other modifications are made. See [external_licenses.md](https://github.com/PhishIndex/phishindex-blocklist/blob/main/external_licenses.md) for the licenses of the external data sources where including a copy of the original license is required. 
+IP logger domains, free hosting providers and URL shorteners are from PhishIndex Threat Intelligence.
+
+We automatically process and refine this data to remove false positives and ensure proper formatting so we cannot always be fully sure if any modifications were made. Specifically regarding the URLabuse source, we automatically extract the URLs from the JSON formatting, remove the protocols (https://, http://, www.) and no other modifications are made. See [external_licenses.md](https://github.com/PhishIndex/phishindex-blocklist/blob/main/external_licenses.md) for the licenses of the external data sources where including a copy of the original license is required. We are not associated with the external data sources.
 
 ---
 
