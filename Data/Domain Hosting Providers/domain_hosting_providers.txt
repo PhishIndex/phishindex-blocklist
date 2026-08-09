@@ -55,6 +55,7 @@ trycloudflare.com
 typedream.app
 ukit.me
 vercel.app
+vercel-storage.com
 viewdns.net
 web.app
 webflow.io
